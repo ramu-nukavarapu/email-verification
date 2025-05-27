@@ -2,6 +2,61 @@ import streamlit as st
 import smtplib
 import dns.resolver
 
+if st.session_state.get("submitted"):
+    name = st.session_state.get("name", "there")
+
+    st.markdown(f"""
+    <style>
+    .thank-overlay {{
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,0.15);  /* subtle transparent overlay */
+        z-index: 9999;
+        backdrop-filter: blur(4px);       /* soft blur for better UX */
+        -webkit-backdrop-filter: blur(4px);
+    }}
+    .thank-card {{
+        background: var(--main-bg-color, #fff); /* fallback white */
+        color: var(--text-color, #000);          /* fallback black */
+        padding: 2.5rem 3rem;
+        border-radius: 1.2rem;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+        animation: fadeIn 0.5s ease-in-out;
+        border: 2px solid var(--secondary-bg-color, #ddd);
+    }}
+    .thank-card h1 {{
+        margin-bottom: 1rem;
+        font-size: 2.4rem;
+    }}
+    .thank-card p {{
+        font-size: 1.15rem;
+        line-height: 1.6;
+    }}
+    @keyframes fadeIn {{
+        from {{ opacity: 0; transform: scale(0.97); }}
+        to {{ opacity: 1; transform: scale(1); }}
+    }}
+    </style>
+
+    <div class="thank-overlay">
+        <div class="thank-card">
+            <h1>🎉 Thank You!</h1>
+            <p>Thanks <strong>{name}</strong>! Your data has been successfully recorded.</p>
+            <p>We’ll be in touch shortly. ✉️</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.stop()
+
 # Set default states
 if "verified" not in st.session_state:
     st.session_state.verified = False
@@ -156,12 +211,13 @@ submit_disabled = not (
     st.session_state.email
 )
 
-submitted = st.button("Submit", disabled=submit_disabled)
 
-if submitted:
-    # Here you would call store_to_sheet or insert into a DB
-    # e.g. store_to_sheet(name, mobile, email)
+
+if st.button("Submit", disabled=submit_disabled):
+    # Simulate storing to sheet/db
+    
     st.toast("Data submitted successfully!")
-    st.success(f"Thanks {st.session_state.name}! Your data has been recorded.")
-    # Optionally reset verified flag or inputs
     st.session_state.verified = False
+    st.session_state.submitted = True
+    st.rerun()
+
